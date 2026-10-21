@@ -115,17 +115,28 @@ public class FrmLogin extends javax.swing.JFrame {
             return;
         }
 
+        // 1. REQUISITO: VALIDACIÓN DE TIPO DE DATO (Solo letras)
+        if (!usuario.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$")) {
+            JOptionPane.showMessageDialog(this, "El usuario solo puede contener letras (sin números, símbolos ni espacios).", "Validación: Tipo de Dato", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 2. REQUISITO: VALIDACIÓN DE LONGITUD
+        if (usuario.length() < 4 || usuario.length() > 15) {
+            JOptionPane.showMessageDialog(this, "La longitud del usuario debe ser entre 4 y 15 caracteres.", "Validación: Longitud", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // La validación de la contraseña se mantiene intacta
         if (validarContrasenaFuerte(password)) {
-            // Consulta SQL para insertar el usuario
             String sql = "INSERT INTO Usuarios (username, password, id_rol, estado) VALUES (?, ?, ?, 1)";
 
-            try (java.sql.Connection conn = com.twcorpororation.familymart.dao.Conexion.conectar(); java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            try (java.sql.Connection conn = com.twcorpororation.familymart.dao.Conexion.conectar(); 
+                 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                 pstmt.setString(1, usuario);
-                pstmt.setString(2, password); // Nota: En un entorno de producción real, las contraseñas se encriptan (ej. con BCrypt).
+                pstmt.setString(2, password);
 
-                // Obtenemos el rol seleccionado (Índice 0 = Admin, Índice 1 = Cajero)
-                // Le sumamos 1 porque en nuestra BD los IDs empiezan en 1
                 int idRol = cbxRol.getSelectedIndex() + 1;
                 pstmt.setInt(3, idRol);
 
