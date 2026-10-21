@@ -464,6 +464,7 @@ public class FrmAdmin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // Inicio del CRUD de Productos
         String codigo = txtCodigo.getText().trim();
         String nombre = txtNombre.getText().trim();
         String precioStr = txtPrecio.getText().trim();
