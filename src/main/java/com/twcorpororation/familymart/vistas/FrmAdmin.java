@@ -465,7 +465,7 @@ public class FrmAdmin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
 
-    //Create (Crear)
+    //CRUD: Create (Crear)
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // Inicio del CRUD de Productos
         String codigo = txtCodigo.getText().trim();
@@ -559,7 +559,7 @@ public class FrmAdmin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tblProductosMouseClicked
 
-    //Update (Actualizar)
+    //CRUD: Update (Actualizar)
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
         if (idProductoSeleccionado == -1) {
@@ -612,7 +612,7 @@ public class FrmAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnModificarActionPerformed
     
 
-    //Delete (Borrar)
+    //CRUD: Delete (Borrar)
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
         if (idProductoSeleccionado == -1) {
@@ -806,7 +806,7 @@ public class FrmAdmin extends javax.swing.JFrame {
         }
     }
 
-    //Read (Leer/Consultar)
+    //CRUD: Read (Leer/Consultar)
     private void cargarIndicadores() {
         String sqlVentas = "SELECT SUM(total) as Ingresos, COUNT(id_venta) as Transacciones, MAX(total) as Maximo, MIN(total) as Minimo, AVG(total) as Promedio FROM Ventas";
         String sqlStock = "SELECT COUNT(id_producto) as Agotados FROM Productos WHERE stock = 0 AND estado = 1";
@@ -846,7 +846,7 @@ public class FrmAdmin extends javax.swing.JFrame {
         }
     }
     
-    //Read (Leer/Consultar)
+    //CRUD: Read (Leer/Consultar)
     private void buscarProductos(String textoBusqueda) {
         javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel();
         modelo.addColumn("ID");
