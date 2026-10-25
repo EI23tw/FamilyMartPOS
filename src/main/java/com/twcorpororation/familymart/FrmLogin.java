@@ -105,7 +105,7 @@ public class FrmLogin extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+//LOGIN 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
         String usuario = txtUsuario.getText().trim();
         String password = new String(txtPassword.getPassword());
@@ -137,6 +137,7 @@ public class FrmLogin extends javax.swing.JFrame {
                 pstmt.setString(1, usuario);
                 pstmt.setString(2, password);
 
+                // Como las listas en Java empiezan a contar desde 0, le suma 1 para que coincida con los IDs de tu base de datos (1 = Admin, 2 = Cajero).
                 int idRol = cbxRol.getSelectedIndex() + 1;
                 pstmt.setInt(3, idRol);
 
@@ -175,6 +176,7 @@ public class FrmLogin extends javax.swing.JFrame {
 
             java.sql.ResultSet rs = pstmt.executeQuery();
 
+            //ASIGNACIÓN DE VISTA DE ACUERDO A ROLES
             if (rs.next()) {
                 int idRol = rs.getInt("id_rol");
 
@@ -215,7 +217,7 @@ public class FrmLogin extends javax.swing.JFrame {
         txtPassword.setText("");
     }//GEN-LAST:event_cbxRolActionPerformed
 
-// ... dentro de la clase FrmLogin ...
+// VALIDACIÓN DE CONTRASEÑA - ESTABLECEMOS REGLAS dentro de la clase FrmLogin ...
     /**
      * Valida que la contraseña cumpla con: - Mínimo 8 caracteres - Al menos una
      * minúscula - Al menos una mayúscula - Al menos un número - Al menos un
