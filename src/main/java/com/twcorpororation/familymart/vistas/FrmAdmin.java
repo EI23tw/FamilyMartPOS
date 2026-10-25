@@ -53,6 +53,7 @@ public class FrmAdmin extends javax.swing.JFrame {
         modelo.addColumn("Rol");
         tblUsuarios.setModel(modelo);
 
+        //CONSULTA 2 TABLAS
         String sql = "SELECT u.id_usuario, u.username, r.nombre_rol FROM Usuarios u INNER JOIN Roles r ON u.id_rol = r.id_rol WHERE u.estado = 1";
 
         try (java.sql.Connection conn = com.twcorpororation.familymart.dao.Conexion.conectar(); java.sql.PreparedStatement pstmt = conn.prepareStatement(sql); java.sql.ResultSet rs = pstmt.executeQuery()) {
@@ -462,7 +463,9 @@ public class FrmAdmin extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
 
+    //Create (Crear)
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // Inicio del CRUD de Productos
         String codigo = txtCodigo.getText().trim();
@@ -481,8 +484,13 @@ public class FrmAdmin extends javax.swing.JFrame {
             double precio = Double.parseDouble(precioStr);
             int stock = Integer.parseInt(stockStr);
 
-            if (precio <= 0 || stock < 0) {
-                javax.swing.JOptionPane.showMessageDialog(this, "El precio debe ser mayor a 0 y el stock no puede ser negativo.", "Rango Inválido", javax.swing.JOptionPane.WARNING_MESSAGE);
+            // REQUISITO: VALIDACIÓN DE RANGO DE VALORES ACEPTABLES
+            if (stock < 1 || stock > 500) {
+                JOptionPane.showMessageDialog(this, "El stock ingresado está fuera del rango permitido (1 a 500 unidades).", "Rango Inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (precio <= 0) {
+                JOptionPane.showMessageDialog(this, "El precio debe ser mayor a 0.", "Rango Inválido", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -551,6 +559,7 @@ public class FrmAdmin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tblProductosMouseClicked
 
+    //Update (Actualizar)
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
         if (idProductoSeleccionado == -1) {
@@ -565,20 +574,26 @@ public class FrmAdmin extends javax.swing.JFrame {
             double precio = Double.parseDouble(txtPrecio.getText().trim());
             int stock = Integer.parseInt(txtStock.getText().trim());
 
-            if (precio <= 0 || stock < 0) {
-                JOptionPane.showMessageDialog(this, "Valores numéricos inválidos.", "Error", JOptionPane.WARNING_MESSAGE);
+            // REQUISITO: VALIDACIÓN DE RANGO DE VALORES ACEPTABLES
+            if (stock < 1 || stock > 500) {
+                JOptionPane.showMessageDialog(this, "El stock ingresado está fuera del rango permitido (1 a 500 unidades).", "Rango Inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (precio <= 0) {
+                JOptionPane.showMessageDialog(this, "El precio debe ser mayor a 0.", "Rango Inválido", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            String sql = "UPDATE Productos SET codigo_barras=?, nombre=?, precio=?, stock=? WHERE id_producto=?";
+            // REQUISITO: Modificación con criterio (El código de barras no se actualiza)
+            String sql = "UPDATE Productos SET nombre=?, precio=?, stock=? WHERE id_producto=?";
 
-            try (java.sql.Connection conn = com.twcorpororation.familymart.dao.Conexion.conectar(); java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            try (java.sql.Connection conn = com.twcorpororation.familymart.dao.Conexion.conectar(); 
+                 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                pstmt.setString(1, codigo);
-                pstmt.setString(2, nombre);
-                pstmt.setDouble(3, precio);
-                pstmt.setInt(4, stock);
-                pstmt.setInt(5, idProductoSeleccionado);
+                pstmt.setString(1, nombre);
+                pstmt.setDouble(2, precio);
+                pstmt.setInt(3, stock);
+                pstmt.setInt(4, idProductoSeleccionado);
 
                 pstmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.");
@@ -595,7 +610,9 @@ public class FrmAdmin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Ingrese números válidos en Precio y Stock.");
         }
     }//GEN-LAST:event_btnModificarActionPerformed
+    
 
+    //Delete (Borrar)
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
         if (idProductoSeleccionado == -1) {
@@ -606,10 +623,15 @@ public class FrmAdmin extends javax.swing.JFrame {
         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este producto?", "Confirmar", JOptionPane.YES_NO_OPTION);
 
         if (confirmacion == JOptionPane.YES_OPTION) {
-            // Cambiamos el estado a 0 (eliminación lógica)
-            String sql = "UPDATE Productos SET estado=0 WHERE id_producto=?";
+        
+        // REQUISITO: Eliminación Física (Borra el registro permanentemente - DESCARTADO POR SEGURIDAD)
+        // String sqlFisica = "DELETE FROM Productos WHERE id_producto = ?";
 
-            try (java.sql.Connection conn = com.twcorpororation.familymart.dao.Conexion.conectar(); java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        // REQUISITO: Eliminación Lógica (Solo oculta el registro, protege el historial)
+        String sql = "UPDATE Productos SET estado=0 WHERE id_producto=?";
+
+        try (java.sql.Connection conn = com.twcorpororation.familymart.dao.Conexion.conectar(); 
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                 pstmt.setInt(1, idProductoSeleccionado);
                 pstmt.executeUpdate();
@@ -763,7 +785,7 @@ public class FrmAdmin extends javax.swing.JFrame {
 
         tblProductos.setModel(modelo);
 
-        // Consulta: Solo productos con estado = 1 (Activos)
+        // Consulta: Solo productos con estado = 1 (Activos) CONSULTA 1 TABLA
         String sql = "SELECT id_producto, codigo_barras, nombre, precio, stock FROM Productos WHERE estado = 1";
 
         try (Connection conn = Conexion.conectar(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
@@ -784,6 +806,7 @@ public class FrmAdmin extends javax.swing.JFrame {
         }
     }
 
+    //Read (Leer/Consultar)
     private void cargarIndicadores() {
         String sqlVentas = "SELECT SUM(total) as Ingresos, COUNT(id_venta) as Transacciones, MAX(total) as Maximo, MIN(total) as Minimo, AVG(total) as Promedio FROM Ventas";
         String sqlStock = "SELECT COUNT(id_producto) as Agotados FROM Productos WHERE stock = 0 AND estado = 1";
@@ -822,7 +845,8 @@ public class FrmAdmin extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "Error al cargar KPIs: " + e.getMessage(), "Error BD", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
+    //Read (Leer/Consultar)
     private void buscarProductos(String textoBusqueda) {
         javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel();
         modelo.addColumn("ID");
